@@ -1,5 +1,6 @@
 
 #include "kdTree.h"
+#include <iostream>
 
 namespace kdTree
 {
@@ -7,7 +8,8 @@ namespace kdTree
 		:data(inputData),
 		num(inputData.shape()[0]),
 		dim(inputData.shape()[1]),
-		root(NULL)
+		root(NULL),
+		leafIndex(num)
 	{
 		for (int i = 0; i < num; i++)
 		{
@@ -19,6 +21,7 @@ namespace kdTree
 
 	kdTree::~kdTree()
 	{
+		delete root;
 	}
 
 	void kdTree::build_tree()
@@ -28,10 +31,11 @@ namespace kdTree
 
 	kdTreeNode * kdTree::build_sub_tree(int lower, int upper, kdTreeNode* parent)
 	{
-		kdTreeNode* node = new kdTreeNode(dim);
 
 		if (upper < lower)
 			return  NULL;
+
+		kdTreeNode* node = new kdTreeNode(dim);
 
 		if ((upper - lower) <= bucketsize)
 		{
@@ -47,7 +51,7 @@ namespace kdTree
 		}
 		else
 		{
-			int cut_dim = -1;
+			int cut_dim = 0;
 			float max_range = 0.0;
 			int middle_index;
 
@@ -84,6 +88,7 @@ namespace kdTree
 
 			node->left = build_sub_tree(lower, middle_index, node);
 			node->right = build_sub_tree(middle_index + 1, upper, node);
+			///子树建立完成
 
 			if (node->right == NULL)
 			{
@@ -133,8 +138,8 @@ namespace kdTree
 
 		for (i = lower + 2; i <= upper; i += 2)
 		{
-			tempmin = data[leafIndex[lower - 1]][dimension];
-			tempmax = data[leafIndex[lower]][dimension];
+			tempmin = data[leafIndex[i - 1]][dimension];
+			tempmax = data[leafIndex[i]][dimension];
 			if (tempmax > tempmax)
 				std::swap(tempmin, tempmax);
 			if (fmin > tempmin)
@@ -158,7 +163,7 @@ namespace kdTree
 	int kdTree::MiddleIndex(int dimension, float average, int lower, int upper)
 	{
 		int lb = lower, ub = upper;
-		while (lb<ub)
+		while (lb < ub)
 		{
 			if (data[leafIndex[lb]][dimension] <= average)
 				lb++;

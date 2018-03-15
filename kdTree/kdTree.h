@@ -25,14 +25,12 @@ namespace kdTree
 		kdTree(kdTreeArray& inputData);
 		~kdTree();
 
+	private:
+		static const int bucketsize = 0;
+
 		const kdTreeArray& data;
 		const int num;
 		const int dim;
-
-
-	private:
-		static const int bucketsize = 12;
-
 		kdTreeNode* root;
 		std::vector<int> leafIndex;
 
