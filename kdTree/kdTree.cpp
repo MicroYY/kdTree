@@ -12,13 +12,13 @@ namespace kdTree
 	{
 		return x*x;
 	}
-	
+
 	inline bool operator<(const kdTreeResult& r1, const kdTreeResult& r2)
 	{
 		return r1.distance < r2.distance;
 	}
 
-	kdTree::kdTree(kdTreeArray& input_data,bool input_rearrange)
+	kdTree::kdTree(kdTreeArray& input_data, bool input_rearrange)
 		:data(input_data),
 		num(input_data.shape()[0]),
 		dim(input_data.shape()[1]),
@@ -205,7 +205,27 @@ namespace kdTree
 			return lb - 1;
 	}
 
-	void kdTree::NearestAroundTreeNode(int idx, int correl_time, int nn, 
+
+	void kdTree::NNearestAroundPoint(std::vector<float>& qv, int nn, kdTreeResultVector& result)
+	{
+		SearchRecord sr(qv, *this, result);
+		std::vector<float> vdiff(dim, 0.0);
+
+		result.clear();
+
+		sr.center_idx = -1;
+		sr.correl_time = 0;
+		sr.nn = nn;
+
+		root->search(sr);
+
+		if (sort_result)
+			sort(result.begin(), result.end());
+	}
+
+
+
+	void kdTree::NNearestAroundTreeNode(int idx, int correl_time, int nn,
 		kdTreeResultVector & result)
 	{
 		std::vector<float> query_vec(dim);
@@ -222,6 +242,17 @@ namespace kdTree
 		if (sort_result)
 			sort(result.begin(), result.end());
 	}
+
+	void kdTree::NearestAroundTreeNode(int idx, int correltime, kdTreeResult & result)
+	{
+		kdTreeResultVector resultVector;
+		NNearestAroundTreeNode(idx, correltime, 2, resultVector);
+		if (resultVector[0].idx == idx)
+			result = resultVector[1];
+		else
+			result = resultVector[0];
+	}
+
 
 	kdTreeNode::kdTreeNode(int dim) :range_vec(dim)
 	{
@@ -458,7 +489,7 @@ namespace kdTree
 	void kdTreeResultVector::PushElementAndHeapify(kdTreeResult &r)
 	{
 		push_back(r);
-		push_heap( begin(), end() );
+		push_heap(begin(), end());
 	}
 
 	float kdTreeResultVector::MaxValue()

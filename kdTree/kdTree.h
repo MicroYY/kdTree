@@ -71,10 +71,16 @@ namespace kdTree
 		friend class kdTreeNode;
 		friend class SearchRecord;
 
-		void NearestAroundTreeNode(int idx, int correltime, int nn, kdTreeResultVector& result);
+		//搜索某个点在树中的nn个最近点
+		void NNearestAroundPoint(std::vector<float>& qv, int nn, kdTreeResultVector& result);
+		//搜索树中某个点的nn个最近点
+		void NNearestAroundTreeNode(int idx, int correltime, int nn, kdTreeResultVector& result);
+		//搜索树中某个点的最近点
+		void NearestAroundTreeNode(int idx, int correltime, kdTreeResult& result);
+
 
 	private:
-		static const int bucketsize = 0;
+		static const int bucketsize =0;
 
 		//只是reference，非本地存储的数据
 		const kdTreeArray& data;
